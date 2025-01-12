@@ -20,6 +20,9 @@ func main() {
 		v1.GET("/auth/:provider", routes.RedirectHandler)
 		v1.GET("/auth/:provider/callback", routes.CallbackHandler)
 
+		v1.POST("/auth/register", routes.RegisterUser)
+		v1.POST("/auth/login", routes.LoginUser)
+
 		v1.GET("/auth/profile", middleware.IsAuth(), routes.GetProfile)
 
 		v1.GET("/", middleware.IsAuth(), routes.Home)

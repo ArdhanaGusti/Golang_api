@@ -10,6 +10,7 @@ import (
 	"github.com/ArdhanaGusti/Golang_api/models"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
+	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/danilopolani/gocialite.v1/structs"
 )
 
@@ -114,6 +115,58 @@ func getToken(user *models.User) string {
 
 func CheckToken(c *gin.Context) {
 	c.JSON(200, gin.H{
+		"message": "Berhasil",
+	})
+}
+
+func RegisterUser(c *gin.Context) {
+	var existedUser models.User
+	if err := config.DB.First(&existedUser, "email = ?", c.PostForm("Email")).Error; err == nil {
+		c.JSON(409, gin.H{"status": "User is exist"})
+		c.Abort()
+		return
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(c.PostForm("Password")), bcrypt.DefaultCost)
+	if err != nil {
+		c.JSON(400, gin.H{"status": "Hashing failed"})
+		c.Abort()
+		return
+	}
+
+	newUser := models.User{
+		Username: c.PostForm("Username"),
+		Fullname: c.PostForm("Fullname"),
+		Email:    c.PostForm("Email"),
+		Password: string(hash),
+	}
+
+	config.DB.Create(&newUser)
+
+	c.JSON(200, gin.H{
+		"status": "berhasil",
+		"data":   newUser,
+	})
+}
+
+func LoginUser(c *gin.Context) {
+	var existedUser models.User
+	if err := config.DB.First(&existedUser, "email = ?", c.PostForm("Email")).Error; err != nil {
+		c.JSON(404, gin.H{"status": "User don't exist"})
+		c.Abort()
+		return
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(existedUser.Password), []byte(c.PostForm("Password"))); err != nil {
+		c.JSON(400, gin.H{"status": err.Error()})
+		c.Abort()
+		return
+	}
+
+	var jwtToken = getToken(&existedUser)
+	c.JSON(200, gin.H{
+		"email":   existedUser.Email,
+		"token":   jwtToken,
 		"message": "Berhasil",
 	})
 }

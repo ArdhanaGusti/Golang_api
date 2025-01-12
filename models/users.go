@@ -10,6 +10,7 @@ type User struct {
 	Username string
 	Fullname string
 	Email    string
+	Password string
 	SocialID string
 	Provider string
 	Avatar   string
