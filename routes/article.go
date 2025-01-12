@@ -4,8 +4,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/ardhanagusti/learn-gin/config"
-	"github.com/ardhanagusti/learn-gin/models"
+	"github.com/ArdhanaGusti/Golang_api/config"
+	"github.com/ArdhanaGusti/Golang_api/models"
 	"github.com/gin-gonic/gin"
 	"github.com/gosimple/slug"
 )

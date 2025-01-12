@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/ardhanagusti/learn-gin/config"
-	"github.com/ardhanagusti/learn-gin/middleware"
-	"github.com/ardhanagusti/learn-gin/routes"
+	"github.com/ArdhanaGusti/Golang_api/config"
+	"github.com/ArdhanaGusti/Golang_api/middleware"
+	"github.com/ArdhanaGusti/Golang_api/routes"
 	"github.com/gin-gonic/gin"
 	"github.com/subosito/gotenv"
 )

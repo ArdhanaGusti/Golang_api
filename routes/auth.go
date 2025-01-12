@@ -6,8 +6,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/ardhanagusti/learn-gin/config"
-	"github.com/ardhanagusti/learn-gin/models"
+	"github.com/ArdhanaGusti/Golang_api/config"
+	"github.com/ArdhanaGusti/Golang_api/models"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 	"gopkg.in/danilopolani/gocialite.v1/structs"
