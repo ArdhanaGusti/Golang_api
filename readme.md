@@ -19,6 +19,21 @@ go mod tidy
 4. Copy .env.example and rename to .env
 
 5. Fill the DB connetion mysql and client credentials (Optional) in .env
+```bash
+# Primary
+DB_USERNAME=
+DB_PASSWORD=
+DB_HOST=
+DB_PORT=
+DB_NAME=
+
+# Optional
+CLIENT_ID_GO=
+CLIENT_SECRET_GO=
+
+CLIENT_ID_GH=
+CLIENT_SECRET_GH=
+```
 
 6. Run Project
 ```bash
