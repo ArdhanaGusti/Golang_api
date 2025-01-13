@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/ArdhanaGusti/Golang_api/handler/failed"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 )
@@ -22,7 +23,7 @@ func CheckJwt(admin bool) gin.HandlerFunc {
 		// bearerToken := strings.Split(authHeader, " ")
 		token, err := jwt.Parse(authHeader, func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-				return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 			}
 
 			return []byte(os.Getenv("JWT_SECRET")), nil
@@ -34,13 +35,19 @@ func CheckJwt(admin bool) gin.HandlerFunc {
 			c.Set("jwt_user_id", claims["user_id"])
 
 			if admin == true && userRole == false {
-				c.JSON(404, gin.H{"msg": "You are not admin"})
+				c.JSON(403, failed.FailedResponse{
+					StatusCode: 403,
+					Message:    "You're not an admin",
+				})
 				c.Abort()
 				return
 			}
 			// c.Set("jwt_user_role", claims["user_role"])
 		} else {
-			c.JSON(422, gin.H{"msg": "Invalid token", "error": err})
+			c.JSON(422, failed.FailedResponse{
+				StatusCode: 422,
+				Message:    err.Error(),
+			})
 			c.Abort()
 			return
 		}
