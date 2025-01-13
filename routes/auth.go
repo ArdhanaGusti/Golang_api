@@ -32,8 +32,8 @@ func RedirectHandler(c *gin.Context) {
 	}
 
 	providerScopes := map[string][]string{
-		"github": []string{"public_repo"},
-		"google": []string{},
+		"github": {"public_repo"},
+		"google": {},
 	}
 
 	providerData := providerSecrets[provider]
@@ -185,6 +185,8 @@ func RegisterUser(c *gin.Context) {
 			StatusCode: 500,
 			Message:    err.Error(),
 		})
+		c.Abort()
+		return
 	}
 
 	c.JSON(200, gin.H{
@@ -229,6 +231,8 @@ func LoginUser(c *gin.Context) {
 			StatusCode: 500,
 			Message:    ert.Error(),
 		})
+		c.Abort()
+		return
 	}
 	c.JSON(200, gin.H{
 		"email":   existedUser.Email,

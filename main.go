@@ -8,10 +8,7 @@ import (
 	"github.com/subosito/gotenv"
 )
 
-func main() {
-	gotenv.Load()
-	config.InitDB()
-
+func setupRouter() *gin.Engine {
 	r := gin.Default()
 
 	v1 := r.Group("/api/v1")
@@ -34,5 +31,13 @@ func main() {
 		v1.DELETE("/delete/:slug", middleware.IsAdmin(), routes.DeleteArticle)
 	}
 
-	r.Run()
+	return r
+}
+
+func main() {
+	gotenv.Load()
+	config.InitDB()
+
+	r := setupRouter()
+	r.Run(":8080")
 }
