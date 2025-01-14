@@ -18,7 +18,7 @@ go mod tidy
 ```
 4. Copy .env.example and rename to .env
 
-5. Fill the DB connetion mysql and client credentials (Optional) in .env
+5. Fill the DB connection mysql, redis connection and client credentials (Optional) in .env
 ```bash
 # Primary
 DB_USERNAME=
