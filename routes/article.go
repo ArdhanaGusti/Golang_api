@@ -24,10 +24,7 @@ func Home(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	c.JSON(200, gin.H{
-		"Message": "Berhasil akses home",
-		"Data":    items,
-	})
+	c.JSON(200, items)
 }
 
 func GetArticle(c *gin.Context) {
@@ -41,24 +38,22 @@ func GetArticle(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	c.JSON(200, gin.H{
-		"data": item,
-	})
+	c.JSON(200, item)
 }
 
-func GetArticleTag(c *gin.Context) {
-	tag := c.Param("tag")
-	items := []models.Article{}
-	if err := config.DB.Where("tag LIKE ?", "%"+tag+"%").Find(&items).Error; err != nil {
-		c.JSON(500, failed.FailedResponse{
-			StatusCode: 500,
-			Message:    err.Error(),
-		})
-	}
-	c.JSON(200, gin.H{
-		"data": items,
-	})
-}
+// func GetArticleTag(c *gin.Context) {
+// 	tag := c.Param("tag")
+// 	items := []models.Article{}
+// 	if err := config.DB.Where("tag LIKE ?", "%"+tag+"%").Find(&items).Error; err != nil {
+// 		c.JSON(500, failed.FailedResponse{
+// 			StatusCode: 500,
+// 			Message:    err.Error(),
+// 		})
+// 	}
+// 	c.JSON(200, gin.H{
+// 		"data": items,
+// 	})
+// }
 
 func PostArticle(c *gin.Context) {
 	var articlePayload validation.CreateArticlePayload
@@ -92,8 +87,7 @@ func PostArticle(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{
-		"status": "berhasil",
-		"data":   item,
+		"message": "Article " + articlePayload.Title + " Made Successfully",
 	})
 }
 
@@ -137,14 +131,22 @@ func UpdateArticle(c *gin.Context) {
 		})
 	}
 	c.JSON(200, gin.H{
-		"data":    item,
-		"message": "Berhasil di update",
+		"message": "Article " + updatedArticle.Title + " Updated Successfully",
 	})
 }
 
 func DeleteArticle(c *gin.Context) {
 	slug := c.Param("slug")
 	var item models.Article
+	if err := config.DB.Where("slug = ?", slug).First(&item).Error; err != nil {
+		c.JSON(500, failed.FailedResponse{
+			StatusCode: 500,
+			Message:    err.Error(),
+		})
+	}
+
+	var title = item.Title
+
 	if err := config.DB.Where("slug = ?", slug).Delete(&item).Error; err != nil {
 		c.JSON(500, failed.FailedResponse{
 			StatusCode: 500,
@@ -152,6 +154,6 @@ func DeleteArticle(c *gin.Context) {
 		})
 	}
 	c.JSON(200, gin.H{
-		"msg": "Berhasil di hapus",
+		"message": "Article " + title + " Deleted Successfully",
 	})
 }

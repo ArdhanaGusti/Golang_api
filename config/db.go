@@ -28,6 +28,10 @@ func InitDB() {
 	}
 	// defer db.DB()
 
-	DB.AutoMigrate(&models.User{})
-	DB.AutoMigrate(&models.Article{})
+	DB.AutoMigrate(&models.User{}, &models.Article{})
+}
+
+func MigrateFreshDB() {
+	DB.Migrator().DropTable(&models.User{}, &models.Article{})
+	DB.AutoMigrate(&models.User{}, &models.Article{})
 }

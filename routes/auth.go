@@ -190,8 +190,7 @@ func RegisterUser(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{
-		"status": "berhasil",
-		"data":   newUser,
+		"status": "User " + userPayload.Fullname + " Registered Successfully",
 	})
 }
 
@@ -235,13 +234,12 @@ func LoginUser(c *gin.Context) {
 		return
 	}
 	c.JSON(200, gin.H{
-		"email":   existedUser.Email,
 		"token":   jwtToken,
-		"message": "Berhasil",
+		"message": "Login " + existedUser.Email + " Successfully",
 	})
 }
 
-func ChangeEmail(c *gin.Context) {
+func ChangeRole(c *gin.Context) {
 	var existedUser models.User
 	if err := config.DB.First(&existedUser, "id = ?", uint(c.MustGet("jwt_user_id").(float64))).Error; err != nil {
 		c.JSON(404, failed.FailedResponse{
@@ -252,16 +250,21 @@ func ChangeEmail(c *gin.Context) {
 		return
 	}
 
-	var email = c.PostForm("Email")
-	if email == "" {
+	var role = c.PostForm("Role")
+	var newRole bool = false
+	if role == "" {
 		c.JSON(404, failed.FailedResponse{
 			StatusCode: 404,
-			Message:    "Email can't be empty",
+			Message:    "Role can't be empty",
 		})
 		return
 	}
 
-	if err := config.DB.Model(&existedUser).Where("id = ?", uint(c.MustGet("jwt_user_id").(float64))).Updates(models.User{Email: email}).Error; err != nil {
+	if role == "admin" {
+		newRole = true
+	}
+
+	if err := config.DB.Model(&existedUser).Where("id = ?", uint(c.MustGet("jwt_user_id").(float64))).Updates(models.User{Role: newRole}).Error; err != nil {
 		c.JSON(500, failed.FailedResponse{
 			StatusCode: 500,
 			Message:    err.Error(),
@@ -270,8 +273,7 @@ func ChangeEmail(c *gin.Context) {
 		return
 	}
 	c.JSON(200, gin.H{
-		"email":   existedUser.Email,
-		"message": "Berhasil",
+		"message": "Change role to " + role + " Successfully",
 	})
 }
 
@@ -288,7 +290,5 @@ func GetProfile(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{
-		"data": user,
-	})
+	c.JSON(200, user)
 }
