@@ -105,15 +105,7 @@ func PostArticle(c *gin.Context) {
 		})
 	}
 
-	exist, err := config.RDB.Exists("articles").Result()
-	if err != nil {
-		c.JSON(500, failed.FailedResponse{
-			StatusCode: 500,
-			Message:    "Failed to find file in redis because: " + err.Error(),
-		})
-		c.Abort()
-		return
-	}
+	exist, _ := config.RDB.Exists("articles").Result()
 
 	if exist > 0 {
 		if err := config.RDB.Del("articles").Err(); err != nil {
@@ -171,15 +163,7 @@ func UpdateArticle(c *gin.Context) {
 		})
 	}
 
-	exist, err := config.RDB.Exists("articles").Result()
-	if err != nil {
-		c.JSON(500, failed.FailedResponse{
-			StatusCode: 500,
-			Message:    "Failed to find file in redis because: " + err.Error(),
-		})
-		c.Abort()
-		return
-	}
+	exist, _ := config.RDB.Exists("articles").Result()
 
 	if exist > 0 {
 		if err := config.RDB.Del("articles").Err(); err != nil {
@@ -216,15 +200,7 @@ func DeleteArticle(c *gin.Context) {
 		})
 	}
 
-	exist, err := config.RDB.Exists("articles").Result()
-	if err != nil {
-		c.JSON(500, failed.FailedResponse{
-			StatusCode: 500,
-			Message:    "Failed to find file in redis because: " + err.Error(),
-		})
-		c.Abort()
-		return
-	}
+	exist, _ := config.RDB.Exists("articles").Result()
 
 	if exist > 0 {
 		if err := config.RDB.Del("articles").Err(); err != nil {

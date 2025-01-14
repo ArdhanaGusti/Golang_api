@@ -23,7 +23,7 @@ func setupRouter() *gin.Engine {
 
 		v1.GET("/auth/profile", middleware.IsAuth(), routes.GetProfile)
 
-		v1.GET("/", middleware.IsAuth(), routes.Home)
+		v1.GET("/article", middleware.IsAuth(), routes.Home)
 		v1.GET("/article/:slug", routes.GetArticle)
 		v1.POST("/article", middleware.IsAuth(), routes.PostArticle)
 		v1.PUT("/article/:slug", middleware.IsAuth(), routes.UpdateArticle)

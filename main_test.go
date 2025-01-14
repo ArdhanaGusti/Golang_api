@@ -25,6 +25,7 @@ type LoginResponse struct {
 func Initialize() {
 	gotenv.Load()
 	config.InitDB()
+	config.InitRedis()
 }
 
 func TestRegisterUser(t *testing.T) {
@@ -196,11 +197,12 @@ func TestGetArticles(t *testing.T) {
 	assert.NoError(t, err1)
 
 	w2 := httptest.NewRecorder()
-	req2, _ := http.NewRequest(http.MethodGet, "/api/v1/", nil)
+	req2, _ := http.NewRequest(http.MethodGet, "/api/v1/article", nil)
 	req2.Header.Set("Authorization", actualResponse.Token)
 
 	router.ServeHTTP(w2, req2)
 	assert.Equal(t, http.StatusOK, w2.Code)
+	println(w2.Body.String())
 	var articles []models.Article
 	err2 := json.Unmarshal(w2.Body.Bytes(), &articles)
 	assert.NoError(t, err2)
@@ -230,7 +232,7 @@ func TestGetArticle(t *testing.T) {
 	assert.NoError(t, err1)
 
 	w2 := httptest.NewRecorder()
-	req2, _ := http.NewRequest(http.MethodGet, "/api/v1/", nil)
+	req2, _ := http.NewRequest(http.MethodGet, "/api/v1/article", nil)
 	req2.Header.Set("Authorization", actualResponse.Token)
 
 	router.ServeHTTP(w2, req2)
@@ -272,7 +274,7 @@ func TestUpdateArticle(t *testing.T) {
 	assert.NoError(t, err1)
 
 	w2 := httptest.NewRecorder()
-	req2, _ := http.NewRequest(http.MethodGet, "/api/v1/", nil)
+	req2, _ := http.NewRequest(http.MethodGet, "/api/v1/article", nil)
 	req2.Header.Set("Authorization", actualResponse.Token)
 
 	router.ServeHTTP(w2, req2)
@@ -318,7 +320,7 @@ func TestDeleteArticle(t *testing.T) {
 	assert.NoError(t, err1)
 
 	w2 := httptest.NewRecorder()
-	req2, _ := http.NewRequest(http.MethodGet, "/api/v1/", nil)
+	req2, _ := http.NewRequest(http.MethodGet, "/api/v1/article", nil)
 	req2.Header.Set("Authorization", actualResponse.Token)
 
 	router.ServeHTTP(w2, req2)
