@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 	"time"
@@ -15,11 +16,28 @@ import (
 
 func Home(c *gin.Context) {
 	items := []models.Article{}
-	// config.DB.Find(&items)
 	if err := config.DB.Preload("User").Find(&items).Error; err != nil {
 		c.JSON(500, failed.FailedResponse{
 			StatusCode: 500,
 			Message:    err.Error(),
+		})
+		c.Abort()
+		return
+	}
+
+	itemsJson, err := json.Marshal(items)
+	if err != nil {
+		c.JSON(500, failed.FailedResponse{
+			StatusCode: 500,
+			Message:    "Failed to set json because: " + err.Error(),
+		})
+		c.Abort()
+	}
+
+	if err := config.RDB.Set("articles", itemsJson, 0).Err(); err != nil {
+		c.JSON(500, failed.FailedResponse{
+			StatusCode: 500,
+			Message:    "Failed to set redis because: " + err.Error(),
 		})
 		c.Abort()
 		return
@@ -38,6 +56,7 @@ func GetArticle(c *gin.Context) {
 		c.Abort()
 		return
 	}
+
 	c.JSON(200, item)
 }
 
@@ -86,6 +105,27 @@ func PostArticle(c *gin.Context) {
 		})
 	}
 
+	exist, err := config.RDB.Exists("articles").Result()
+	if err != nil {
+		c.JSON(500, failed.FailedResponse{
+			StatusCode: 500,
+			Message:    "Failed to find file in redis because: " + err.Error(),
+		})
+		c.Abort()
+		return
+	}
+
+	if exist > 0 {
+		if err := config.RDB.Del("articles").Err(); err != nil {
+			c.JSON(500, failed.FailedResponse{
+				StatusCode: 500,
+				Message:    "Failed to delete redis because: " + err.Error(),
+			})
+			c.Abort()
+			return
+		}
+	}
+
 	c.JSON(200, gin.H{
 		"message": "Article " + articlePayload.Title + " Made Successfully",
 	})
@@ -130,6 +170,28 @@ func UpdateArticle(c *gin.Context) {
 			Message:    err.Error(),
 		})
 	}
+
+	exist, err := config.RDB.Exists("articles").Result()
+	if err != nil {
+		c.JSON(500, failed.FailedResponse{
+			StatusCode: 500,
+			Message:    "Failed to find file in redis because: " + err.Error(),
+		})
+		c.Abort()
+		return
+	}
+
+	if exist > 0 {
+		if err := config.RDB.Del("articles").Err(); err != nil {
+			c.JSON(500, failed.FailedResponse{
+				StatusCode: 500,
+				Message:    "Failed to delete redis because: " + err.Error(),
+			})
+			c.Abort()
+			return
+		}
+	}
+
 	c.JSON(200, gin.H{
 		"message": "Article " + updatedArticle.Title + " Updated Successfully",
 	})
@@ -153,6 +215,28 @@ func DeleteArticle(c *gin.Context) {
 			Message:    err.Error(),
 		})
 	}
+
+	exist, err := config.RDB.Exists("articles").Result()
+	if err != nil {
+		c.JSON(500, failed.FailedResponse{
+			StatusCode: 500,
+			Message:    "Failed to find file in redis because: " + err.Error(),
+		})
+		c.Abort()
+		return
+	}
+
+	if exist > 0 {
+		if err := config.RDB.Del("articles").Err(); err != nil {
+			c.JSON(500, failed.FailedResponse{
+				StatusCode: 500,
+				Message:    "Failed to delete redis because: " + err.Error(),
+			})
+			c.Abort()
+			return
+		}
+	}
+
 	c.JSON(200, gin.H{
 		"message": "Article " + title + " Deleted Successfully",
 	})

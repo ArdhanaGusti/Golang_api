@@ -36,6 +36,7 @@ func setupRouter() *gin.Engine {
 func main() {
 	gotenv.Load()
 	config.InitDB()
+	config.InitRedis()
 
 	r := setupRouter()
 	r.Run(":8080")
